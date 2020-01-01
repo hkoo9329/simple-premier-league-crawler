@@ -25,15 +25,15 @@
     <show-object-properties value="false" />
     <loaded-nodes>
       <connection connection-id="0d10ad84-741b-436d-891a-04b59bba9c42">
-        <schema name="mysql" object-types="table, function, view" />
+        <schema name="mysql" object-types="table, view" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="0d10ad84-741b-436d-891a-04b59bba9c42">
-      <console name="Connection" type="STANDARD" schema="mysql" session="Main"><![CDATA[select * from pl_matchs;
+      <console name="Connection" type="STANDARD" schema="mysql" session="Main">select * from pl_matchs;
 
-insert into pl_matchs (match_day, match_time, left_team, right_team) values ('2019-01-01 19:00','19:00','teser1','tester2');]]></console>
+insert into pl_matchs (match_day, match_time, left_team, right_team) values ('2019-01-01 19:00','19:00','teser1','tester2');</console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
