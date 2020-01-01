@@ -14,11 +14,11 @@ def match():
 
 if __name__ =='__main__':
     db = PL_database.Database()
-    # crawler = PL_match_crawler.PL_match_crawler()
-    # crawler.PL_match_list(2020,range(1,2))
-    # crawler.driverExit()
-    db.execute("insert into pl_matchs (match_day, match_time, left_team, right_team) "+
-                                    "values ('2019-01-01','19:00','teser1','tester2')")
-    db.commit()
+    row = db.executeOne("select exists (select 1 from pl_match_db)")
+    if row['exists (select 1 from pl_match_db)'] == 0:
+        crawler = PL_match_crawler.PL_match_crawler()
+        crawler.PL_match_list(2019,range(8,13))
+        crawler.PL_match_list(2020,range(1,6))
+        db.close()
     # app.run('0.0.0.0', port=8080)
     # app.run()

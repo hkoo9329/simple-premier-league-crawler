@@ -1,5 +1,5 @@
 import pymysql
-
+import bz2
 class Database():
     def __init__(self):
         self.db = pymysql.connect(host='pl-match-db.cfohe632lhjx.ap-northeast-2.rds.amazonaws.com',
@@ -20,3 +20,6 @@ class Database():
         return row
     def commit(self):
         self.db.commit()
+    def close(self):
+        self.db.close()
+
