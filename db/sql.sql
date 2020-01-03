@@ -6,3 +6,5 @@ create table pl_match_db(
     score varchar(255),
     primary key (id)
 );
+-- 스코어가 없는 상위 row 한개를 가져온다. -> update때 사용
+select id from pl_match_db where score is null limit 1;
