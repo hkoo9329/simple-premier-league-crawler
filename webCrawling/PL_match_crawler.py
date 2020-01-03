@@ -20,9 +20,9 @@ class PL_match_crawler:
 
     def PL_match_list(self,year, month):
         for i in month:
-            url_2019 = "https://sports.news.naver.com/wfootball/schedule/index.nhn?year=" + str(year) + "&month=" + str(
+            url = "https://sports.news.naver.com/wfootball/schedule/index.nhn?year=" + str(year) + "&month=" + str(
                 i) + "&category=premier"
-            self.driver.get(url_2019)
+            self.driver.get(url)
             soup = BeautifulSoup(self.driver.page_source, 'html.parser')
             day_list = []
             timeList = []
