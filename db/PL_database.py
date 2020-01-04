@@ -2,9 +2,9 @@ import pymysql
 import bz2
 class Database():
     def __init__(self):
-        self.db = pymysql.connect(host='pl-match-db.cfohe632lhjx.ap-northeast-2.rds.amazonaws.com',
+        self.db = pymysql.connect(host='localhost',
                                   user='hkoo',
-                                  password='ehfrhfo7',
+                                  password='hkoo',
                                   db='pl_match')
         self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
     def execute(self, query, args={}):
