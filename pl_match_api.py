@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, fields
 from db import PL_database
 from webCrawling import PL_match_crawler
-from selenium import webdriver
-from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리미어리그 경기 결과, 일정 등을 조회하는 API입니다.')
@@ -115,5 +113,4 @@ class MatchRecencyTeam(Resource):
 if __name__ == '__main__':
     db = PL_database.Database()
     crawler = PL_match_crawler.PL_match_crawler()
-    db.close()
     app.run('0.0.0.0', port=8080)
