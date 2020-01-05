@@ -23,7 +23,7 @@ class PL_match_crawler:
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver", options=options)
+        self.driver = webdriver.Chrome("D:/chromedriver.exe", options=options)
         ## 인스턴스 생성 시 테이블이 비어있다면 전체 리그 일정 생성
         row = self.db.executeOne("select exists (select 1 from pl_match_db)")
         if row['exists (select 1 from pl_match_db)'] == 0:

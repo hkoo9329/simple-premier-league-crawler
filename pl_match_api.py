@@ -44,6 +44,7 @@ class MatchDAO(object):
 
     def getMatchAll(self):
         rows = db.executeAll("select * from pl_match_db")
+        print(rows)
         return rows
 
     def getMatchByTeamAll(self, team):
@@ -113,4 +114,4 @@ class MatchRecencyTeam(Resource):
 if __name__ == '__main__':
     db = PL_database.Database()
     crawler = PL_match_crawler.PL_match_crawler()
-    app.run('0.0.0.0', port=8080)
+    app.run()
