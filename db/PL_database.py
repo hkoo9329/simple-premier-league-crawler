@@ -1,5 +1,5 @@
 import pymysql
-import bz2
+import base64
 class Database():
     def __init__(self):
         self.db = pymysql.connect(host='pl-match-db.cfohe632lhjx.ap-northeast-2.rds.amazonaws.com',

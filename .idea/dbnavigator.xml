@@ -23,15 +23,11 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="false" />
-    <loaded-nodes>
-      <connection connection-id="0d10ad84-741b-436d-891a-04b59bba9c42">
-        <schema name="mysql" object-types="function, view, table" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="0d10ad84-741b-436d-891a-04b59bba9c42">
-      <console name="Connection" type="STANDARD" schema="mysql" session="Main"><![CDATA[select id from pl_match_db where score is null limit 1;]]></console>
+      <console name="Connection" type="STANDARD" schema="mysql" session="Main">select id from pl_match_db where score is null limit 1;</console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
