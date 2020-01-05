@@ -4,6 +4,7 @@ from db import PL_database
 from webCrawling.pl_match import match
 import re
 import datetime
+import logging
 
 
 class PL_match_crawler:
@@ -14,6 +15,10 @@ class PL_match_crawler:
     driver = None
     db = None
     season = [[2019, range(8, 13)], [2020, range(1, 6)]]
+    log = logging.getLogger("looger")
+    log.setLevel(logging.INFO)
+    stram_hander = logging.StreamHandler()
+    log.addHandler(stram_hander)
 
     def __init__(self):
         self.db = PL_database.Database()
@@ -23,23 +28,22 @@ class PL_match_crawler:
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome("D:/chromedriver.exe", options=options)
+        self.driver = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver", options=options)
         ## 인스턴스 생성 시 테이블이 비어있다면 전체 리그 일정 생성
-        row = self.db.executeOne("select exists (select 1 from pl_match_db)")
-        if row['exists (select 1 from pl_match_db)'] == 0:
+        row = self.db.executeOne("select exists (select 1 from pl_match_db)as is_empty")
+        if row['is_empty'] == 0:
             self.createMatchListAll()
         self.PL_match_update()
+        self.db.close()
 
     def PL_match_update(self):
         row = self.db.executeAll("select * from pl_match_db where score is null")
         dt = row[0]['match_day']
         if dt >= datetime.datetime.now():
             return
+        year = dt.year
+        month = dt.month
 
-        day = str(row[0]['match_day'])
-        date = re.findall(r"[\w']+", day)
-        year = date[0]
-        month = date[1]
         self.PL_match_list(year, range(int(month), int(month) + 1))
         for match in self.after_match_list:
             for db_match in row:
@@ -51,6 +55,7 @@ class PL_match_crawler:
 
     def PL_match_list(self, year, month):
         for i in month:
+            self.log.info(str(i) + "월")
             url = "https://sports.news.naver.com/wfootball/schedule/index.nhn?year=" + str(year) + "&month=" + str(
                 i) + "&category=premier"
             self.driver.get(url)

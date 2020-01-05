@@ -9,7 +9,6 @@ create table pl_match_db(
 -- 스코어가 없는 상위 row 한개를 가져온다. -> update때 사용
 select id from pl_match_db where score is null limit 1;
 
-
 -- 테이블이 비어 있는지 확인하는 쿼리
 SELECT EXISTS (SELECT 1 FROM table);
 
