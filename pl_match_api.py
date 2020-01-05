@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, fields
 from db import PL_database
 from webCrawling import PL_match_crawler
-
+import logging
 app = Flask(__name__)
 api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리미어리그 경기 결과, 일정 등을 조회하는 API입니다.')
 ns = api.namespace('matchs', description='시즌 전체 경기, 팀별 경기, 최근 경기 조회')
@@ -37,22 +37,24 @@ recencyTeamSql = """select * from (
 
 class MatchDAO(object):
     '''프리미어리그 매치 Data Access Object'''
-
     def __init__(self):
         self.db = db = PL_database.Database()
         self.matchs = []
 
     def getMatchAll(self):
         rows = db.executeAll("select * from pl_match_db")
-        print(rows)
+        log.info(rows)
         return rows
 
     def getMatchByTeamAll(self, team):
+        log.info(team)
         teamNameCheck = self.db.executeOne(
-            "select exists (select * from pl_match_db where left_team='{}')".format(team))
+            "select exists (select * from pl_match_db where left_team='{match_team}')".format(match_team=team))
+        log.info(teamNameCheck)
         if teamNameCheck == 1:
             rows = db.executeAll(
-                "select * from pl_match_db where left_team = '{team}' or right_team = '{team}'".format(team=team))
+                "select * from pl_match_db where left_team = '{match_team}' or right_team = '{match_team}'".format(match_team=team))
+            log.info(rows)
             return rows
         else:
             api.abort(404, "{} doesn't exist".format(team))
@@ -62,9 +64,10 @@ class MatchDAO(object):
         return rows
 
     def getMatchRecencyTeam(self, team):
+        log.info(team)
         teamNameCheck = self.db.executeOne(
-            "select exists (select * from pl_match_db where left_team='{}')".format(team))
-        if teamNameCheck == 1:
+            "select exists (select * from pl_match_db where left_team='{}') as is_empty".format(team))
+        if teamNameCheck['is_empty'] == 1:
             rows = self.db.executeAll(recencyTeamSql.format(team=team))
             return rows
         else:
@@ -80,7 +83,8 @@ class PLMatchListAll(Resource):
     @ns.marshal_list_with(model_matchs)
     def get(self):
         '''전체 리스트 조회'''
-        return DAO.getMatchAll()
+        row = DAO.getMatchAll()
+        return row
 
 
 @ns.route('/all/<string:team>')
@@ -108,10 +112,15 @@ class MatchRecencyTeam(Resource):
     @ns.marshal_list_with(model_matchs)
     def get(self, team):
         '''해당 팀의 최근 8경기를 조회'''
+        print(DAO.getMatchRecencyTeam(team))
         return DAO.getMatchRecencyTeam(team)
 
 
 if __name__ == '__main__':
+    log = logging.getLogger("looger")
+    log.setLevel(logging.INFO)
+    stram_hander = logging.StreamHandler()
+    log.addHandler(stram_hander)
     db = PL_database.Database()
     crawler = PL_match_crawler.PL_match_crawler()
     app.run()

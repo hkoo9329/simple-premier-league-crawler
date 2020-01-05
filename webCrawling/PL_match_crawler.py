@@ -4,6 +4,7 @@ from db import PL_database
 from webCrawling.pl_match import match
 import re
 import datetime
+import logging
 
 
 class PL_match_crawler:
@@ -14,6 +15,10 @@ class PL_match_crawler:
     driver = None
     db = None
     season = [[2019, range(8, 13)], [2020, range(1, 6)]]
+    log = logging.getLogger("looger")
+    log.setLevel(logging.INFO)
+    stram_hander = logging.StreamHandler()
+    log.addHandler(stram_hander)
 
     def __init__(self):
         self.db = PL_database.Database()
@@ -29,6 +34,7 @@ class PL_match_crawler:
         if row['exists (select 1 from pl_match_db)'] == 0:
             self.createMatchListAll()
         self.PL_match_update()
+        self.db.close()
 
     def PL_match_update(self):
         row = self.db.executeAll("select * from pl_match_db where score is null")
@@ -51,6 +57,7 @@ class PL_match_crawler:
 
     def PL_match_list(self, year, month):
         for i in month:
+            self.log.info(str(i) + "월")
             url = "https://sports.news.naver.com/wfootball/schedule/index.nhn?year=" + str(year) + "&month=" + str(
                 i) + "&category=premier"
             self.driver.get(url)
@@ -90,7 +97,7 @@ class PL_match_crawler:
                     # self.db.commit()
                 # # 이미 끝난 경기
                 if timeList and left_team_score and right_team_score:
-                    score = left_team_score[0].get_text() + ":" + right_team_score[0].get_text()
+                    score = left_team_score[0].get_text() + " " + right_team_score[0].get_text()
                     match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), score)
                     self.after_match_list.append(match_info)
                     # self.db.execute(self.after_match_sql,(dt,left_team[0].get_text(),right_team[0].get_text(),score))
