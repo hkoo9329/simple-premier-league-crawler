@@ -39,12 +39,10 @@ class MatchDAO(object):
     '''프리미어리그 매치 Data Access Object'''
     def __init__(self):
         self.db = db = PL_database.Database()
-        self.matchs = []
     
     # 전체 경기를 출력
     def getMatchAll(self):
         rows = db.executeAll("select * from pl_match_db")
-        log.debug(rows)
         return rows
     
     # 특정 팀의 전체 경기를 출력
@@ -125,7 +123,7 @@ class MatchRecencyTeam(Resource):
 
 if __name__ == '__main__':
     log = logging.getLogger("looger")
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
     stram_hander = logging.StreamHandler()
     log.addHandler(stram_hander)
 

@@ -55,7 +55,6 @@ class PL_match_crawler:
 
     def PL_match_list(self, year, month):
         for i in month:
-            self.log.info(str(i) + "월")
             url = "https://sports.news.naver.com/wfootball/schedule/index.nhn?year=" + str(year) + "&month=" + str(
                 i) + "&category=premier"
             self.driver.get(url)

@@ -23,15 +23,11 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes>
-      <connection connection-id="95adf4b0-f589-4661-8083-7636846b81e0">
-        <schema name="mysql" object-types="view, table, function" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="95adf4b0-f589-4661-8083-7636846b81e0">
-      <console name="pl-match" type="STANDARD" schema="mysql" session="Main"><![CDATA[commit;]]></console>
+      <console name="pl-match" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
@@ -276,8 +272,6 @@
           <content-type name="HTML" enabled="true" />
           <content-type name="XHTML" enabled="true" />
           <content-type name="CSS" enabled="true" />
-          <content-type name="SQL" enabled="true" />
-          <content-type name="PL/SQL" enabled="true" />
           <content-type name="JavaScript" enabled="true" />
           <content-type name="YAML" enabled="true" />
         </content-types>
