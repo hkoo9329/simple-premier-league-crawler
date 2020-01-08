@@ -8,7 +8,10 @@ api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리�
 ns = api.namespace('matchs', description='시즌 전체 경기, 팀별 경기, 최근 경기 조회')
 db = PL_database.Database()
 crawler = PL_match_crawler.PL_match_crawler()
-
+log = logging.getLogger("looger")
+log.setLevel(logging.INFO)
+stram_hander = logging.StreamHandler()
+log.addHandler(stram_hander)
 
 model_matchs = api.model('row_match', {
     'id': fields.Integer(readOnly=True, required=True, description='매치 id', help='매치 id 필수'),
@@ -122,5 +125,4 @@ class MatchRecencyTeam(Resource):
         recente_team_list = DAO.getMatchRecencyTeam(team)
         log.debug("최근 팀 경기 리스트 : "+recente_team_list)
         return  recente_team_list
-
 
