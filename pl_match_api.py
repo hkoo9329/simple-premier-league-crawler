@@ -7,7 +7,7 @@ app = Flask(__name__)
 api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리미어리그 경기 결과, 일정 등을 조회하는 API입니다.')
 ns = api.namespace('matchs', description='시즌 전체 경기, 팀별 경기, 최근 경기 조회')
 db = PL_database.Database()
-crawler = PL_match_crawler.PL_match_crawler()
+#crawler = PL_match_crawler.PL_match_crawler()
 log = logging.getLogger("looger")
 log.setLevel(logging.INFO)
 stram_hander = logging.StreamHandler()
@@ -111,7 +111,7 @@ class MatchRecency(Resource):
     def get(self):
         '''최근 8경기를 조회'''
         recente_match_list = DAO.getMatchRecency()
-        log.debug("최근 경기 리스트 : "+recente_match_list)
+        log.debug(recente_match_list)
         return recente_match_list
 
 
@@ -123,6 +123,5 @@ class MatchRecencyTeam(Resource):
     def get(self, team):
         '''해당 팀의 최근 8경기를 조회'''
         recente_team_list = DAO.getMatchRecencyTeam(team)
-        log.debug("최근 팀 경기 리스트 : "+recente_team_list)
+        log.debug(recente_team_list)
         return  recente_team_list
-
