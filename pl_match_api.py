@@ -6,6 +6,9 @@ import logging
 app = Flask(__name__)
 api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리미어리그 경기 결과, 일정 등을 조회하는 API입니다.')
 ns = api.namespace('matchs', description='시즌 전체 경기, 팀별 경기, 최근 경기 조회')
+db = PL_database.Database()
+crawler = PL_match_crawler.PL_match_crawler()
+
 
 model_matchs = api.model('row_match', {
     'id': fields.Integer(readOnly=True, required=True, description='매치 id', help='매치 id 필수'),
@@ -121,12 +124,3 @@ class MatchRecencyTeam(Resource):
         return  recente_team_list
 
 
-if __name__ == '__main__':
-    log = logging.getLogger("looger")
-    log.setLevel(logging.INFO)
-    stram_hander = logging.StreamHandler()
-    log.addHandler(stram_hander)
-
-    db = PL_database.Database()
-    crawler = PL_match_crawler.PL_match_crawler()
-    app.run('0.0.0.0', port=8080)
