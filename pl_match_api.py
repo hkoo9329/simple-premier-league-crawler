@@ -6,7 +6,7 @@ import logging
 app = Flask(__name__)
 api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리미어리그 경기 결과, 일정 등을 조회하는 API입니다.')
 ns = api.namespace('matchs', description='시즌 전체 경기, 팀별 경기, 최근 경기 조회')
-db = PL_database.Database()
+
 #crawler = PL_match_crawler.PL_match_crawler()
 log = logging.getLogger("looger")
 log.setLevel(logging.INFO)
@@ -44,11 +44,10 @@ recencyTeamSql = """select * from (
 class MatchDAO(object):
     '''프리미어리그 매치 Data Access Object'''
     def __init__(self):
-        self.db = db = PL_database.Database()
-    
+        self.db = PL_database.Database()
     # 전체 경기를 출력
     def getMatchAll(self):
-        rows = db.executeAll("select * from pl_match_db")
+        rows = self.db.executeAll("select * from pl_match_db")
         return rows
     
     # 특정 팀의 전체 경기를 출력
@@ -56,7 +55,7 @@ class MatchDAO(object):
         teamNameCheck = self.db.executeOne(
             "select exists (select * from pl_match_db where left_team='{match_team}')as is_empty".format(match_team=team))
         if teamNameCheck['is_empty'] == 1:
-            rows = db.executeAll(
+            rows = self.db.executeAll(
                 "select * from pl_match_db where left_team = '{match_team}' or right_team = '{match_team}'".format(match_team=team))
             return rows
         else:
@@ -125,3 +124,4 @@ class MatchRecencyTeam(Resource):
         recente_team_list = DAO.getMatchRecencyTeam(team)
         log.debug(recente_team_list)
         return  recente_team_list
+
