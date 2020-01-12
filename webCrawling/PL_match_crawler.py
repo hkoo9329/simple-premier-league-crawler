@@ -2,7 +2,6 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from db import PL_database
 from webCrawling.pl_match import match
-import re
 import datetime
 import logging
 
@@ -12,8 +11,6 @@ class PL_match_crawler:
                                 values (%s,%s,%s)"""
     after_match_sql = """insert into pl_match_db (match_day, left_team, right_team, score)
                                 values (%s,%s,%s,%s)"""
-    driver = None
-    db = None
     season = [[2019, range(8, 13)], [2020, range(1, 6)]]
     log = logging.getLogger("looger")
     log.setLevel(logging.INFO)
@@ -28,12 +25,12 @@ class PL_match_crawler:
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver", options=options)
+        self.driver = webdriver.Chrome("D:/chromedriver.exe", options=options)
         ## 인스턴스 생성 시 테이블이 비어있다면 전체 리그 일정 생성
-        row = self.db.executeOne("select exists (select 1 from pl_match_db)as is_empty")
-        if row['is_empty'] == 0:
-            self.createMatchListAll()
-        self.PL_match_update()
+        # row = self.db.executeOne("select exists (select 1 from pl_match_db)as is_empty")
+        # if row['is_empty'] == 0:
+        #     self.createMatchListAll()
+        # self.PL_match_update()
         self.db.close()
 
     def PL_match_update(self):
@@ -80,25 +77,31 @@ class PL_match_crawler:
                 right_team = soup.select(
                     '#_monthlyScheduleList > tr:nth-child(' + str(size) + ') > td > div > span.team_right > span.name'
                 )
-                # # 날짜가 없는 child도 있기 때문에 day로 미리 저장해둠
-                if day_list and timeList:
+                if day_list:
                     day = day_list[0].get_text()
-                    dt = datetime.datetime.strptime(
-                        str(year) + "-" + day.replace(".", "-") + " " + timeList[0].get_text(),
-                        "%Y-%m-%d %H:%M")
-                # # 아직 결과가 나오지 않은 경기
-                if timeList and not left_team_score:
-                    match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), None)
-                    self.before_match_list.append(match_info)
-                    # self.db.execute(self.before_match_sql,(dt,left_team[0].get_text(),right_team[0].get_text()))
-                    # self.db.commit()
-                # # 이미 끝난 경기
-                if timeList and left_team_score and right_team_score:
-                    score = left_team_score[0].get_text() + ":" + right_team_score[0].get_text()
-                    match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), score)
-                    self.after_match_list.append(match_info)
-                    # self.db.execute(self.after_match_sql,(dt,left_team[0].get_text(),right_team[0].get_text(),score))
-                    # self.db.commit()
+
+                if timeList:
+                    # # 아직 결과가 나오지 않은 경기
+                    if not left_team_score:
+                        dt = datetime.datetime.strptime(
+                            str(year) + "-" + day.replace(".", "-") + " " + timeList[0].get_text(),
+                            "%Y-%m-%d %H:%M")
+                        self.log.info(str(dt) + " " + left_team[0].get_text() + " " + right_team[0].get_text())
+                        match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), None)
+                        self.before_match_list.append(match_info)
+
+                    # # 이미 끝난 경기
+                    elif left_team_score and right_team_score:
+                        dt = datetime.datetime.strptime(
+                            str(year) + "-" + day.replace(".", "-") + " " + timeList[0].get_text(),
+                            "%Y-%m-%d %H:%M")
+                        score = left_team_score[0].get_text() + ":" + right_team_score[0].get_text()
+                        self.log.info(
+                            str(dt) + " " + left_team[0].get_text() + " " + right_team[0].get_text() + " " + score)
+                        match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), score)
+                        self.after_match_list.append(match_info)
+
+                # day와 time이 모두 없다면 끝까지 다 탐색한것임으로 탐색 종료
                 if not day_list and not timeList:
                     break
                 # 다음 child 탐색을 위해 size +1 씩 증가시키며 탐색
