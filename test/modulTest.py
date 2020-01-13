@@ -2,6 +2,9 @@ from webCrawling import PL_match_crawler
 from webCrawling import pl_match
 from db import PL_database
 import logging
+from datetime import datetime
+import json
+import threading
 
 class Test:
     def __init__(self):
@@ -12,22 +15,18 @@ class Test:
         stram_hander = logging.StreamHandler()
         self.log.addHandler(stram_hander)
 
-    def 크롤링테스트(self,year,month):
-        self.crawler.PL_match_list(year,month)
+
+    def 크롤링테스트(self):
+        dt = datetime.now()
+        self.crawler.PL_match_list(dt.year,range(dt.month,dt.month+1))
+
+    def 쓰레드_타이머_이용_주기적반복_테스트(self):
+        print("test")
+        threading.Timer(5.0,self.쓰레드_타이머_이용_주기적반복_테스트).start()
+
 
 if __name__ == '__main__':
     test = Test()
-    test.크롤링테스트(2019,range(8,13))
-    test.크롤링테스트(2020,range(1,6))
-    # json=test.db.executeAll("select * from pl_match_db")
-    # match_list = list()
-    # for i in range(1,len(json)):
-    #     datetime=json[i]['match_day']
-    #     leftTeam = json[i]['left_team']
-    #     rightTeam = json[i]['right_team']
-    #     score = json[i]['score']
-    #     match_list.append(pl_match.match(datetime,leftTeam,rightTeam,score))
-    #
-    # for i in match_list:
-    #     print(str(i.getDatetime())+" "+str(i.getLeftTeam())+i.getRightTeam())
+    # test.크롤링테스트()
+    test.쓰레드_타이머_이용_주기적반복_테스트()
 

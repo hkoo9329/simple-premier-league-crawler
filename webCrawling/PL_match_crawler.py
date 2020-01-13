@@ -5,7 +5,6 @@ from webCrawling.pl_match import match
 import datetime
 import logging
 
-
 class PL_match_crawler:
     before_match_sql = """insert into pl_match_db (match_day, left_team, right_team)
                                 values (%s,%s,%s)"""
@@ -27,10 +26,10 @@ class PL_match_crawler:
         options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome("D:/chromedriver.exe", options=options)
         ## 인스턴스 생성 시 테이블이 비어있다면 전체 리그 일정 생성
-        # row = self.db.executeOne("select exists (select 1 from pl_match_db)as is_empty")
-        # if row['is_empty'] == 0:
-        #     self.createMatchListAll()
-        # self.PL_match_update()
+        row = self.db.executeOne("select exists (select 1 from pl_match_db)as is_empty")
+        if row['is_empty'] == 0:
+            self.createMatchListAll()
+        self.PL_match_update()
         self.db.close()
 
     def PL_match_update(self):
@@ -77,26 +76,25 @@ class PL_match_crawler:
                 right_team = soup.select(
                     '#_monthlyScheduleList > tr:nth-child(' + str(size) + ') > td > div > span.team_right > span.name'
                 )
+                # day가 없는 child도 있기 때문에 day를 저장해둠
                 if day_list:
                     day = day_list[0].get_text()
 
                 if timeList:
-                    # # 아직 결과가 나오지 않은 경기
+                    # 아직 결과가 나오지 않은 경기
+                    dt = datetime.datetime.strptime(
+                        str(year) + "-" + day.replace(".", "-") + " " + timeList[0].get_text(),
+                        "%Y-%m-%d %H:%M")
+
                     if not left_team_score:
-                        dt = datetime.datetime.strptime(
-                            str(year) + "-" + day.replace(".", "-") + " " + timeList[0].get_text(),
-                            "%Y-%m-%d %H:%M")
-                        self.log.info(str(dt) + " " + left_team[0].get_text() + " " + right_team[0].get_text())
+                        print(str(dt) + " " + left_team[0].get_text() + " " + right_team[0].get_text())
                         match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), None)
                         self.before_match_list.append(match_info)
 
                     # # 이미 끝난 경기
                     elif left_team_score and right_team_score:
-                        dt = datetime.datetime.strptime(
-                            str(year) + "-" + day.replace(".", "-") + " " + timeList[0].get_text(),
-                            "%Y-%m-%d %H:%M")
                         score = left_team_score[0].get_text() + ":" + right_team_score[0].get_text()
-                        self.log.info(
+                        print(
                             str(dt) + " " + left_team[0].get_text() + " " + right_team[0].get_text() + " " + score)
                         match_info = match(str(dt), left_team[0].get_text(), right_team[0].get_text(), score)
                         self.after_match_list.append(match_info)

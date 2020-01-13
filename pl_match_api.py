@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, fields
 from db import PL_database
-from webCrawling import PL_match_crawler
 import logging
+import threading
 app = Flask(__name__)
 api = Api(app, version='0.5', title='PL 매치 정보 API', description='프리미어리그 경기 결과, 일정 등을 조회하는 API입니다.')
 ns = api.namespace('matchs', description='시즌 전체 경기, 팀별 경기, 최근 경기 조회')
@@ -12,6 +12,8 @@ log = logging.getLogger("looger")
 log.setLevel(logging.INFO)
 stram_hander = logging.StreamHandler()
 log.addHandler(stram_hander)
+db = None
+
 
 model_matchs = api.model('row_match', {
     'id': fields.Integer(readOnly=True, required=True, description='매치 id', help='매치 id 필수'),
@@ -41,23 +43,28 @@ recencyTeamSql = """select * from (
 ) order by id;"""
 
 
+def db_reconnect(second):
+    global db
+    db = PL_database.Database()
+    threading.Timer(second,db_reconnect).start()
+
+db_reconnect(28000)
+
 class MatchDAO(object):
     '''프리미어리그 매치 Data Access Object'''
     def __init__(self):
-        self.db = PL_database.Database()
-
-
+        global db
     # 전체 경기를 출력
     def getMatchAll(self):
-        rows = self.db.executeAll("select * from pl_match_db")
+        rows = db.executeAll("select * from pl_match_db")
         return rows
     
     # 특정 팀의 전체 경기를 출력
     def getMatchByTeamAll(self, team):
-        teamNameCheck = self.db.executeOne(
+        teamNameCheck = db.executeOne(
             "select exists (select * from pl_match_db where left_team='{match_team}')as is_empty".format(match_team=team))
         if teamNameCheck['is_empty'] == 1:
-            rows = self.db.executeAll(
+            rows = db.executeAll(
                 "select * from pl_match_db where left_team = '{match_team}' or right_team = '{match_team}'".format(match_team=team))
             return rows
         else:
@@ -65,20 +72,19 @@ class MatchDAO(object):
     
     # 최근 8경기를 출력
     def getMatchRecency(self):
-        rows = self.db.executeAll(recencySql)
+        rows = db.executeAll(recencySql)
         return rows
 
     # 특정 팀의 최근 8경기를 출력
     def getMatchRecencyTeam(self, team):
         log.info(team)
-        teamNameCheck = self.db.executeOne(
+        teamNameCheck = db.executeOne(
             "select exists (select * from pl_match_db where left_team='{}') as is_empty".format(team))
         if teamNameCheck['is_empty'] == 1:
-            rows = self.db.executeAll(recencyTeamSql.format(match_team=team))
+            rows = db.executeAll(recencyTeamSql.format(match_team=team))
             return rows
         else:
             api.abort(404, "{} doesn't exist".format(team))
-
 
 
 DAO = MatchDAO()
@@ -126,6 +132,3 @@ class MatchRecencyTeam(Resource):
         recente_team_list = DAO.getMatchRecencyTeam(team)
         log.debug(recente_team_list)
         return  recente_team_list
-
-if __name__=="__main__":
-    app.run()
