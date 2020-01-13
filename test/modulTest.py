@@ -17,8 +17,8 @@ class Test:
 
 if __name__ == '__main__':
     test = Test()
-
-    test.크롤링테스트(2020,range(1,2))
+    test.크롤링테스트(2019,range(8,13))
+    test.크롤링테스트(2020,range(1,6))
     # json=test.db.executeAll("select * from pl_match_db")
     # match_list = list()
     # for i in range(1,len(json)):
