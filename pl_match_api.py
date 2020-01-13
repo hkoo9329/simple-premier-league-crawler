@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restplus import Api, Resource, fields
 from db import PL_database
+from webCrawling.PL_match_crawler import PL_match_crawler
 import logging
 import threading
 app = Flask(__name__)
@@ -43,12 +44,16 @@ recencyTeamSql = """select * from (
 ) order by id;"""
 
 
-def db_reconnect(second):
+def db_reconnect():
     global db
     db = PL_database.Database()
-    threading.Timer(second,db_reconnect).start()
+    crawler=PL_match_crawler()
+    crawler.driverExit()
+    threading.Timer(28000.0,db_reconnect).start()
 
-db_reconnect(28000)
+# 8시간 이후에 db에 재접속
+# 8시간동안 쿼리가 없으면 연결이 해제되기 때문에
+db_reconnect()
 
 class MatchDAO(object):
     '''프리미어리그 매치 Data Access Object'''
