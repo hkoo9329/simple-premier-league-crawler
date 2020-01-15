@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 import json
 import threading
-
+import platform
 class Test:
     def __init__(self):
         self.crawler = PL_match_crawler.PL_match_crawler()
@@ -27,6 +27,6 @@ class Test:
 
 if __name__ == '__main__':
     test = Test()
-    # test.크롤링테스트()
+    test.크롤링테스트()
     test.쓰레드_타이머_이용_주기적반복_테스트()
 

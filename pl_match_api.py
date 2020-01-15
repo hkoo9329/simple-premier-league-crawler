@@ -74,7 +74,14 @@ class MatchDAO(object):
             return rows
         else:
             api.abort(404, "{} doesn't exist".format(team))
-    
+
+    # 이번주 경기
+    def getThisWeekMatchs(self):
+        rows = db.executeAll(
+            "select * from pl_match_db where YEARWEEK(match_day,1) = YEARWEEK(CURDATE(),1)"
+        )
+        return rows
+
     # 최근 8경기를 출력
     def getMatchRecency(self):
         rows = db.executeAll(recencySql)
@@ -137,3 +144,13 @@ class MatchRecencyTeam(Resource):
         recente_team_list = DAO.getMatchRecencyTeam(team)
         log.debug(recente_team_list)
         return  recente_team_list
+
+@ns.route('/recency/week')
+class MatchThisWeek(Resource):
+    @ns.marshal_list_with(model_matchs)
+    def get(self):
+        ''' 이번주 경기를 조회'''
+        week_match_list = DAO.getThisWeekMatchs()
+        log.debug(week_match_list)
+        return week_match_list
+

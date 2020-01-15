@@ -35,3 +35,6 @@ select * from (
     where match_day >= NOW() and (left_team = '토트넘' or right_team = '토트넘')
     limit 5
 ) order by id;
+
+--- 이번주의 날짜의 row만 가져오는 쿼리
+select * from pl_match_db where YEARWEEK(match_day,1) = YEARWEEK(CURDATE(),1)
